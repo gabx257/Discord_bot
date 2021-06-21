@@ -314,4 +314,4 @@ async def on_raw_reaction_remove(payload):
 
 
 keep_alive()
-bot.run('NzgxNTEyNzg5MTg0MjE3MDkw.X7-ugA.TFKmoAI8ASIE8v7Q8e-5A1D19zk')
+bot.run()
