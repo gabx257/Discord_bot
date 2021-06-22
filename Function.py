@@ -1,73 +1,62 @@
-from random import randint
+from datetime import datetime
+import discord
+import json
 
-on_going_events = []
+def joining(name, event_id,initial_time=datetime.now()):
+  with open("event_list.json","r+") as file:
+    event_list = json.load(file)
+    ctx_event = event_list[event_id]
+    names = [i["name"] for i in ctx_event["participants"]]
+    if name not in names:
+      ctx_event["participants"].append({"name":name,"start_time":initial_time,"end_time":None,"loot":0})
+      event_list[event_id] = ctx_event
+      file.seek()
+      json.dump(event_list,file)
+    else:
+      pass #add bot msg?
 
-def start_event(start_time, event_owner,event_id=randint(100,999)): #create the event
+def leaving(name, event_id, leaving_time=datetime.now()):
+  with open("event_list.json","r+") as file:
+      event_list = json.load(file)
+      ctx_event = event_list[event_id]
+      names = [i["name"] for i in ctx_event["participants"]]
+      if name in names:
+        i = names.index(name)
+        ctx_event["participants"][i]["end_time"] = leaving_time
+        event_list[event_id] = ctx_event
+        file.seek()
+        json.dump(event_list,file)
+      else:
+        pass #add bot msg?
 
-  check = [events[id] for events in on_going_events] # all ids in use
-
-  while event_id in check: 
-    event_id = randint(100,999)
-  participants = {event_info:[event_id,0], event_owner:start_time} # assign a unique id to the event and creates the list of participants
-
-
-def joining(name, start_time, event_id): # join a on going event
-  for event in on_going_events: # loops through all current events
-    if event[event_info[0]] == event_id:
-      if name not in event: # adds new participant if not already present in the event
-        event[name:start_time]
-        break # stops the loop after adding(no need to go through everything)
-
-# def leaving(name, event_id):
-#   for event in on_going_events:
-#     if event[event_info[0]] == event_id:
-#     if name in 
-
-
-def percentages(event_id): # calculates Percentages based on time spent on the event
-  participant = event.items()
-
-  loot = participant[0[0[0]]]
-  perc = {event_info:[event_id,loot]}
-  participant.pop(0)
-  start_time = participant[0[0]]
-
-  for p in participant: # p é uma lista no formato [nome,tempo]
-    perc[p[0]:round(p[1]/start_time,2)]
-
-  return perc
+def event_start(start,owner,id,guild):
+  with open("event_list.json","r+") as file:
+    event_list = json.load(file)
+    event_list[id] = {"guild":guild,"creator":owner,"start":start,"loot":0,"participants":[]}
+    file.seek()
+    json.dump(event_list,file)
 
 
-def add_loot(amount,event_id):
-  for event in on_going_events:
-    if event[event_info[0]] == event_id:
-      event[event_info[1]] += amount
-      break
 
-def sub_loot(amount,event_id):
-  for event in on_going_events:
-    if event[event_info[0]] == event_id:
-      event[event_info[1]] -= amount
-      break
+def split(event_id):
+    with open("event_list.json","r+") as file:
+      event_list = json.load(file)
+      ctx_event = event_list[event_id]
+      loot = ctx_event["loot"]
+      participants = ctx_event["participants"]
+      total_time = sum([x["end_time"]-x["start_time"] for x in participants])
+      loot_per_time = loot/total_time
+      for p in participants:
+        p["loot"] = (p["end_time"]-p["start_time"])*loot_per_time
+      event_list[event_id] = ctx_event
+      file.seek()
+      json.dump(event_list,file)
 
-def end_event(event_id):
-  for event in on_going_events:
-    if event[event_info[0]] == event_id:
-
-      perc = percentages(event_id)
-      n_participants = range(perc[1:])
-      even_split = round(1/n_participants,2)
-      full_participation = []
-      event_end = {event_info[event_id,event_info[1]]}
-      rest = 0
-
-      for person in perc[1:]:
-        if person[1] == 1:
-          full_participation.append(person[0])
-          event_end[person[0],event[event_info[1]*even_split]
-        else:
-          split = even_split*person[1]
-          event_end[person[0],event[event_info[1]*split]
-          rest += 1-split
-    break
-    return event_end
+def end_event(event_id,end_time=datetime.now()):
+  with open("event_list.json","r+") as file:
+    event_list = json.load(file)
+    ctx_event = event_list[event_id]
+    participants = ctx_event["participants"]
+    for person in participants:
+      leaving(person["name"],event_id)
+    split(event_id)
