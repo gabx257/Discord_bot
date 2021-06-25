@@ -2,17 +2,17 @@ import discord
 import emoji
 import json
 import os
+from ping import keep_alive
 from discord.ext import commands
-from discord_slash import SlashCommand
 from event_manager import *
 from random import randint
 
-token = "ODU3OTM4NDkxOTAzNTc0MDI2.YNW3fA.BZRjvufi2QwDbLciFI6RqHGK8oA"
+token = os.environ['Token']
+
 test_guild_id = 849727553111064576
 intents = discord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
-slash = SlashCommand(bot, sync_commands=True)
 bot_removed = False
 msg = None
 bot_add = False
@@ -297,5 +297,5 @@ async def on_raw_reaction_remove(payload):
             await msg.edit(embed=embed)
     bot_removed = False
 
-
+keep_alive()
 bot.run(token)
