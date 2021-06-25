@@ -5,23 +5,17 @@ from Ping import keep_alive
 import json
 import os
 from event_manager import *
-from discord_slash import SlashCommand
 
 token = os.environ['Token']
 test_guild_id = 849727553111064576
 intents = discord.Intents.default()
 intents.members = True
 bot = discord.Client(intents=intents)
-slash = SlashCommand(bot, sync_commands=True)
 bot_removed = False
 msg = None
 bot_add = False
 last_guild = None
 channel = None
-
-@slash.slash(name="ping", guild_ids=[test_guild_id])
-async def _ping(ctx): # Defines a new "context" (ctx) command called "ping."
-    await ctx.send(f"Pong! ({bot.latency*1000}ms)")
 
 @bot.event
 async def on_message(ctx):
