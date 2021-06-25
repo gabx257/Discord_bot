@@ -5,18 +5,23 @@ from Ping import keep_alive
 import json
 import os
 from event_manager import *
+from discord_slash import SlashCommand
 
 token = os.environ['Token']
-
+test_guild_id = 849727553111064576
 intents = discord.Intents.default()
 intents.members = True
 bot = discord.Client(intents=intents)
+slash = SlashCommand(bot, sync_commands=True)
 bot_removed = False
 msg = None
 bot_add = False
 last_guild = None
 channel = None
 
+@slash.slash(name="ping", guild_ids=[test_guild_id])
+async def _ping(ctx): # Defines a new "context" (ctx) command called "ping."
+    await ctx.send(f"Pong! ({bot.latency*1000}ms)")
 
 @bot.event
 async def on_message(ctx):
@@ -174,14 +179,13 @@ async def on_raw_reaction_remove(payload):
             embed = msg.embeds[0]
             fields = embed.fields
             for i, field in enumerate(fields):
-                if user.name in field.value:
+                if nick in field.value:
                     name = field.name
                     value = field.value.replace(nick, "---")
                     embed.set_field_at(i, name=name, value=value)
 
             await msg.edit(embed=embed)
     bot_removed = False
-
 
 keep_alive()
 bot.run(token)
