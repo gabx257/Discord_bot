@@ -3,29 +3,38 @@ import emoji
 import discord
 import json
 
+def updateMsg(ctx):
+    with open("configs.json", "r+") as file:
+        configs = json.load(file)
+        try:
+            configs[str(ctx.guild.id)]["msg"] = msg.id
+        except:
+            configs[str(ctx.guild.id)]["msg"] = None
+        file.seek(0)
+        json.dump(configs, file, indent=4)
+
 def check(msg):
-  return msg.content == "y" or msg.content == "n"
+    return msg.content == "y" or msg.content == "n"
 
+async def setup(ctx, bot):
+    await ctx.channel.send("which channel should i use?",delete_after = 20)
+    channel = "None"
+    msg2 = await bot.wait_for('message')
+    if msg2.author == ctx.author:
+        if msg2.content in [i.name for i in ctx.guild.channels]:
+            channel = msg2.content
+            await ctx.channel.send("got it",delete_after = 10)
+            await msg2.delete()
+        else:
+            await ctx.channel.send("cant find this channel, please choose another one",delete_after = 10)
+            return setup(ctx)
 
-async def setup(ctx,bot):
-  await ctx.channel.send("which channel should i use?",delete_after = 20)
-  channel = "None"
-  msg2 = await bot.wait_for('message')
-  if msg2.author == ctx.author:
-    if msg2.content in [i.name for i in ctx.guild.channels]:
-      channel = msg2.content
-      await ctx.channel.send("got it",delete_after = 10)
-      await msg2.delete()
-    else:
-      await ctx.channel.send("cant find this channel, please choose another one",delete_after = 10)
-      return setup(ctx)
-      
-  with open("configs.json", "r+") as file:
-      json_file = json.load(file)
-      new_guild = {str(ctx.guild.id):{"channel":channel,"msg":msg}}
-      json_file.update(new_guild)
-      file.seek(0)
-      json.dump(json_file, file, indent=4)
+    with open("configs.json", "r+") as file:
+        json_file = json.load(file)
+        new_guild = {str(ctx.guild.id):{"channel":channel,"msg":msg}}
+        json_file.update(new_guild)
+        file.seek(0)
+        json.dump(json_file, file, indent=4)
 
 async def get_reaction_info(payload,bot):
     chl = bot.get_channel(payload.channel_id)
@@ -38,9 +47,9 @@ async def get_reaction_info(payload,bot):
 async def atualizaConfig(msg, ctx):
     await msg.edit(embed=msg.embeds[0])
     try:
-      await ctx.delete()
+        await ctx.delete()
     except:
-      return
+        return
 
 
 def inputConfigValue(posicao, name, valor,msg):
@@ -65,15 +74,15 @@ async def finalTemplateGenerator(ctx,bot,msg):
     qnt = list(map(lambda x: int(x[1]), string_to_list))
     message_1 = discord.Embed(title=embed.fields[0].value,
                               description="IP: " + embed.fields[1].value +
-                              "+" + "\nDate: " + embed.fields[2].value +
-                              "\nTime: " + embed.fields[3].value)
+                                          "+" + "\nDate: " + embed.fields[2].value +
+                                          "\nTime: " + embed.fields[3].value)
     for i, number in enumerate(qnt):
         t = ["---" for i in range(number)]
         message_1.add_field(name=cls[i], value="\n".join(t))
     try:
-      await msg.delete()
+        await msg.delete()
     except:
-      None
+        None
     msg = await ctx.channel.send(embed=message_1)
     emoji_list = open("emoji list.txt").read()
     emoji_list = emoji_list.split("\n")
@@ -89,9 +98,10 @@ async def finalTemplateGenerator(ctx,bot,msg):
     msg.embeds[0].set_footer(text=s)
     await msg.edit(embed=msg.embeds[0])
     try:
-      await ctx.delete()
+        await ctx.delete()
     except:
-      None
+        None
+    return msg
 #---------------------------template loader------------------------------
 def avalonTemplateGenerator(templates):
     inputConfigValue(0, "Title", templates["Title"])
@@ -142,20 +152,19 @@ async def createConfig(ctx,configs=["-"]*5):
 
 #---------------------------class creation------------------------------
 async def classCreation(ctx,msg):
-  if ctx.content.split(" ", 1)[-1].split(" ")[-1].isdecimal():
-    desc_now = msg.embeds[0].fields[4].value
-    desc = ctx.content.split(" ", 1)[-1]
-    if desc_now == "-": desc_now = ""
-    if not desc.split(" ")[0] in desc_now:
-        desc_now = desc_now + "\n" + desc
-    else:
-        i = desc_now.find(desc.split(" ")[0])
-        j = desc_now.find("\n", i)
-        if j == -1: j = 0
-        desc_now = desc_now.replace(
-            desc.split(" ")[0] + " " + desc_now[j - 1], desc)
+    if ctx.content.split(" ", 1)[-1].split(" ")[-1].isdecimal():
+        desc_now = msg.embeds[0].fields[4].value
+        desc = ctx.content.split(" ", 1)[-1]
+        if desc_now == "-": desc_now = ""
+        if not desc.split(" ")[0] in desc_now:
+            desc_now = desc_now + "\n" + desc
+        else:
+            i = desc_now.find(desc.split(" ")[0])
+            j = desc_now.find("\n", i)
+            desc_now = desc_now.replace(
+                desc_now[i:j], desc)
 
-    msg.embeds[0].set_field_at(4,
-                                name="Classes",
-                                value=desc_now)
-    await atualizaConfig(msg, ctx)
+        msg.embeds[0].set_field_at(4,
+                                   name="Classes",
+                                   value=desc_now)
+        await atualizaConfig(msg, ctx)
