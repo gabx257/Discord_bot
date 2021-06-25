@@ -7,7 +7,7 @@ from discord.ext import commands
 from event_manager import *
 from random import randint
 
-token = os.environ['Token']
+token = "ODU3OTM4NDkxOTAzNTc0MDI2.YNW3fA.BZRjvufi2QwDbLciFI6RqHGK8oA"
 
 test_guild_id = 849727553111064576
 intents = discord.Intents.default()
