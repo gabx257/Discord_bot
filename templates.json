@@ -1,23 +1,23 @@
 {
-  "AVALON BIG PULL": {
-    "Title": "AVALON BIG PULL",
-    "Min IP": "1500",
-    "Date": "quarta",
-    "Time": "19:00",
-    "Classes": "Tank 1\nOff-Tank 1\nHealer 1\nOff-Healer 2\nArcano 2\nSUP 1\nDPS 11"
-  },
-  "DG AVALON SKIPPADA": {
-    "Title": "DG AVALON SKIPPADA",
-    "Min IP": "1300",
-    "Date": "HOJE",
-    "Time": "20:00",
-    "Classes": "Tank 1\nOff-Tank 1\nHealer 1\nOff-Healer 2\nArcano 1\nSUP 1\nDPS 12"
-  },
-  "dg": {
-    "Title": "dg",
-    "Min IP": "-",
-    "Date": "-",
-    "Time": "-",
-    "Classes": "-"
-  }
+    "AVALON BIG PULL": {
+        "Title": "AVALON BIG PULL",
+        "Min IP": "1500",
+        "Date": "quarta",
+        "Time": "19:00",
+        "Classes": "Tank 1\nOff-Tank 1\nHealer 1\nOff-Healer 2\nArcano 2\nSUP 1\nDPS 11"
+    },
+    "DG AVALON SKIPPADA": {
+        "Title": "DG AVALON SKIPPADA",
+        "Min IP": "1300",
+        "Date": "HOJE",
+        "Time": "20:00",
+        "Classes": "Tank 1\nOff-Tank 1\nHealer 1\nOff-Healer 2\nArcano 1\nSUP 1\nDPS 12"
+    },
+    "dg": {
+        "Title": "dg",
+        "Min IP": "1200",
+        "Date": "10/10",
+        "Time": "15:00",
+        "Classes": "dps 10\ntank 5\nhealer 5\nsuport 5"
+    }
 }
