@@ -1,55 +1,56 @@
-import discord
 import json
-import os
-from ping import keep_alive
-from discord.ext import commands
-import event_manager
 
-token = os.environ['Token']
+import discord
+from discord.ext import commands
+
+import event_manager
+import loot_split
+from ping import keep_alive
+
+token = "ODU3OTM4NDkxOTAzNTc0MDI2.YNW3fA.BZRjvufi2QwDbLciFI6RqHGK8oA"
 intents = discord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
-bot_removed = False
-bot_add = False
 
-def updateMsg(ctx,msg):
+
+def updateMsg(msg):
     with open("configs.json", "r+") as file:
         configs = json.load(file)
         try:
-            configs[str(ctx.guild.id)]["msg"] = msg.id
+            configs[str(msg.guild.id)]["msg"] = msg.id
         except:
-            configs[str(ctx.guild.id)]["msg"] = None
+            configs[str(msg.guild.id)]["msg"] = None
         file.seek(0)
         json.dump(configs, file, indent=4)
 
+
 async def check_message(ctx):
-  guild_id = str(ctx.guild.id)
-  with open("configs.json", "r+") as file:
-    configs = json.load(file)
-    try:
-      msg = await ctx.channel.fetch_message(configs[guild_id]["msg"])
-      return msg
-    except:
-      return None
+    guild_id = str(ctx.guild.id)
+    with open("configs.json", "r+") as file:
+        configs = json.load(file)
+        try:
+            msg = await ctx.channel.fetch_message(configs[guild_id]["msg"])
+            return msg
+        except:
+            return None
 
 
-def checkChannel():
+def checkChannel(ctx):
+    guild_id = str(ctx.guild.id)
+    with open("configs.json") as file:
+        configs = json.load(file)
+        if guild_id in list(configs.keys()):
+            return ctx.channel.name == configs[guild_id]["channel"]
+        else:
+            return False
+
+
+def checkUser():
     async def predicate(ctx):
-        guild_id = str(ctx.guild.id)
-        with open("configs.json") as file:
-            configs = json.load(file)
-            if guild_id in list(configs.keys()):
-                channel = configs[guild_id]["channel"]
-            else:
-                return False
-        return ctx.channel.name == channel
+        return ctx.author.id == 289922186247012364
 
     return commands.check(predicate)
 
-def checkUser():
-  async def predicate(ctx):
-    return ctx.author.id == 289922186247012364
-  return commands.check(predicate)
 
 @bot.command()
 async def setup(ctx):
@@ -75,14 +76,12 @@ async def setup(ctx):
 
 
 @bot.command()
-@checkChannel()
 async def event(ctx):
     msg = await event_manager.createConfig(ctx)
-    updateMsg(ctx,msg)
+    updateMsg(msg)
 
 
 @bot.command()
-@checkChannel()
 async def title(ctx, arg):
     msg = await check_message(ctx)
     msg.embeds[0].set_field_at(0, name="Title", value=arg)
@@ -91,7 +90,6 @@ async def title(ctx, arg):
 
 
 @bot.command()
-@checkChannel()
 async def ip(ctx, arg):
     msg = await check_message(ctx)
     msg.embeds[0].set_field_at(1, name="Min IP", value=arg)
@@ -100,7 +98,6 @@ async def ip(ctx, arg):
 
 
 @bot.command()
-@checkChannel()
 async def date(ctx, arg):
     msg = await check_message(ctx)
     msg.embeds[0].set_field_at(2, name="Date", value=arg)
@@ -109,7 +106,6 @@ async def date(ctx, arg):
 
 
 @bot.command()
-@checkChannel()
 async def time(ctx, arg):
     msg = await check_message(ctx)
     msg.embeds[0].set_field_at(3, name="Time", value=arg)
@@ -118,7 +114,6 @@ async def time(ctx, arg):
 
 
 @bot.command()
-@checkChannel()
 async def clas(ctx, name, qnt):
     msg = await check_message(ctx)
     desc_now = msg.embeds[0].fields[4].value
@@ -140,19 +135,6 @@ async def clas(ctx, name, qnt):
 
 
 @bot.command()
-@checkChannel()
-async def finish(ctx):
-    global bot_add
-    msg = await check_message(ctx)
-    bot_add = True
-    msg = await event_manager.finalTemplateGenerator(ctx, bot, msg)
-    bot_add = False
-    updateMsg(ctx)
-    await ctx.message.delete()
-
-
-@bot.command()
-@checkChannel()
 async def clear(ctx, arg=100, arg2=False):
     if ctx.channel.permissions_for(
             ctx.author
@@ -165,7 +147,6 @@ async def clear(ctx, arg=100, arg2=False):
 
 
 @bot.command()
-@checkChannel()
 async def createtemplate(ctx):
     msg = await check_message(ctx)
     with open("templates.json", "r+") as file:
@@ -196,26 +177,15 @@ async def createtemplate(ctx):
 
 
 @bot.command()
-@checkChannel()
 async def loadtemplate(ctx, name):
-    global bot_add
     with open("templates.json") as file:
         templates = json.load(file)
         tmsg = await event_manager.createConfig(ctx, list(templates[name].values()))
-        updateMsg(ctx,tmsg)
-        await ctx.channel.send("confirm this template?(y/n)", delete_after=10)
-        msg2 = await bot.wait_for('message', check=event_manager.check)
-        if msg2.content == "y":
-            await msg2.delete()
-            bot_add = True
-            tmsg = await event_manager.finalTemplateGenerator(ctx, bot, tmsg)
-            bot_add = False
-            updateMsg(ctx,tmsg)
+        updateMsg(tmsg)
     await ctx.message.delete()
 
 
 @bot.command()
-@checkChannel()
 async def templates(ctx):
     with open("templates.json") as file:
         json_file = json.load(file)
@@ -225,94 +195,113 @@ async def templates(ctx):
 
 
 @bot.command()
-@checkChannel()
 async def quit(ctx):
     await ctx.message.delete()
     await ctx.guild.leave()
 
 
 @bot.command()
-@checkChannel()
-@checkUser()
 async def manualremove(ctx, nick):
-  msg = await check_message(ctx)
-  embed = msg.embeds[0]
-  for i, field in enumerate(embed.fields):
-      if nick in field.value:
-          name = field.name
-          value = field.value.replace(nick, "---")
-          embed.set_field_at(i, name=name, value=value)
-          await msg.edit(embed=embed)
-          break
-      elif i == len(embed.fields) - 1:
-          await ctx.channel.send("not found", delete_after=10)
-      await ctx.message.delete()
+    msg = await check_message(ctx)
+    embed = msg.embeds[0]
+    for i, field in enumerate(embed.fields):
+        if nick in field.value:
+            name = field.name
+            value = field.value.replace(nick, "---")
+            embed.set_field_at(i, name=name, value=value)
+            await msg.edit(embed=embed)
+            break
+        elif i == len(embed.fields) - 1:
+            await ctx.channel.send("not found", delete_after=10)
+    await ctx.message.delete()
 
 
 @bot.event
 async def on_raw_reaction_add(payload):
-    global bot_removed
-    global bot_add
-    if not bot_add:
-        info = await event_manager.get_reaction_info(payload, bot)
-        msg = info[0]
-        user = info[1]
-        member = await msg.guild.fetch_member(user.id)
-        if member.nick != None:
-            nick = member.nick
-        else:
-            nick = user.name
-        await bot.wait_until_ready()
-        if user != bot.user:
-            reactions = [i.emoji for i in msg.reactions]
-            i = reactions.index(str(payload.emoji))
-            if msg.author == bot.user:
-                embed = msg.embeds[0]
-                fields = embed.fields
-                names = []
-                values = []
-                for field in fields:
-                    names.append(field.name)
-                    values.append(field.value)
-                    if nick in field.value:
-                        bot_removed = True
-                        await msg.reactions[i].remove(user)
-                        return
-                if str(payload.emoji) in reactions:
-                    v = values[i].replace("---", nick, 1)
-                    if v == values[i]:
-                        bot_removed == True
-                        await msg.reactions[i].remove(user)
-                        return
-                    embed.set_field_at(i, name=names[i], value=v)
+    await bot. wait_until_ready()
+    info = await event_manager.get_reaction_info(payload, bot)
+    msg = info[0]
+    user = info[1]
+    member = await msg.guild.fetch_member(user.id)
+    reactions = [i.emoji for i in msg.reactions]
+    embed = msg.embeds[0]
+    if member.nick is not None:
+        nick = member.nick
+    else:
+        nick = user.name
 
-            await msg.edit(embed=embed)
+    if bot.user != user and msg.author == bot.user:  # not bot reaction-------------
+        if msg.embeds[0].title == "EVENT CONFIGURATION":  # config msg------------
+            if reactions[0] == str(payload.emoji):  # split---------------
+                msg = await event_manager.finalMsgSplit(msg)
+                await bot.wait_until_ready()
+                updateMsg(msg)
+            elif reactions[1] == str(payload.emoji):  # nosplit------------
+                msg = await event_manager.finalTemplateGenerator(msg)
+                await bot.wait_until_ready()
+                updateMsg(msg)
 
+        elif "Loot split is enabled" in msg.embeds[0].description:  # lootSplit-----------
+
+            if str(payload.emoji) == reactions[0]:  # join-----------
+                await event_manager.updateMembersSplit(payload, reactions, msg, nick, user)
+
+            elif str(payload.emoji) == msg.reactions[1].emoji:  # start------------
+                loot_split.event_start(nick, str(msg.id), msg.guild)
+                embed.description += "\nEvent is running"
+                await msg.edit(embed = embed)
+
+            elif str(payload.emoji) == msg.reactions[2].emoji:  # stop--------------
+                loot_split.end_event(str(msg.id))
+                embed.description = embed.description.replace("Event is running", "Event is over")
+                await msg.edit(embed=embed)
+
+        elif msg.embeds[0].description.split("\n")[-1] == "Loot split is disabled":
+            await event_manager.updateMembers(payload, reactions, msg, nick, user)
 
 @bot.event
 async def on_raw_reaction_remove(payload):
-    global bot_removed
     await bot.wait_until_ready()
-    if not bot_removed:
-        info = await event_manager.get_reaction_info(payload, bot)
-        msg = info[0]
-        user = info[1]
-        member = await msg.guild.fetch_member(user.id)
-        if member.nick != None:
-            nick = member.nick
+    info = await event_manager.get_reaction_info(payload, bot)
+    msg = info[0]
+    user = info[1]
+    member = await msg.guild.fetch_member(user.id)
+    reactions = [i.emoji for i in msg.reactions]
+    i = reactions.index(str(payload.emoji))
+    if member.nick is not None:
+        nick = member.nick
+    else:
+        nick = user.name
+    if msg.author == bot.user:
+        embed = msg.embeds[0]
+        fields = embed.fields
+        if "Loot split is enabled" in msg.embeds[0].description:
+            if str(payload.emoji) == reactions[0]:
+                value = msg.embeds[0].fields[0].value.replace(nick, "")
+                if value == "":
+                    value = "---"
+                name = msg.embeds[0].fields[0].name
+                embed.set_field_at(0, name=name, value=value)
+            if str(payload.emoji) == reactions[1]:
+                pass
+            if str(payload.emoji) == reactions[2]:
+                pass
         else:
-            nick = user.name
-        if msg.author == bot.user:
-            embed = msg.embeds[0]
-            fields = embed.fields
-            for i, field in enumerate(fields):
-                if nick in field.value:
-                    name = field.name
-                    value = field.value.replace(nick, "---")
-                    embed.set_field_at(i, name=name, value=value)
+            if nick in fields[i].value:
+                name = fields[i].name
+                value = fields[i].value.replace(nick, "---")
+                embed.set_field_at(i, name=name, value=value)
+            else:
+                pass
 
-            await msg.edit(embed=embed)
-    bot_removed = False
+        await msg.edit(embed=embed)
 
+
+for i in bot.commands:
+    if i.name != "setup":
+        i.add_check(checkChannel)
+    elif i.name == "manualremove":
+        i.add_check(checkChannel)
+        i.add_check(checkUser)
 keep_alive()
 bot.run(token)
