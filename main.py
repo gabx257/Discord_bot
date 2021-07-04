@@ -252,7 +252,7 @@ async def on_raw_reaction_add(payload):
                 await msg.edit(embed = embed)
 
             elif str(payload.emoji) == msg.reactions[2].emoji:  # stop--------------
-                loot_split.end_event(str(msg.id))
+                loot_split.end_event(str(msg.id), embed.fields[0].value)
                 embed.description = embed.description.replace("Event is running", "Event is over")
                 await msg.edit(embed=embed)
 
@@ -278,6 +278,7 @@ async def on_raw_reaction_remove(payload):
         if "Loot split is enabled" in msg.embeds[0].description:
             if str(payload.emoji) == reactions[0]:
                 value = msg.embeds[0].fields[0].value.replace(nick, "")
+                loot_split.leaving(nick, str(msg.id))
                 if value == "":
                     value = "---"
                 name = msg.embeds[0].fields[0].name

@@ -47,7 +47,7 @@ async def add_reactions(msg, cls):
 # ---------------------------final message creator------------------------------
 async def finalMsgSplit(msg):
     embed = msg.embeds[0]
-    cls = ["join", "start", "pause"]
+    cls = ["join", "start", "stop"]
     message_1 = discord.Embed(title=embed.fields[0].value,
                               description="IP: " + embed.fields[1].value +
                                           "+" + "\nDate: " + embed.fields[2].value +
