@@ -1,24 +1,13 @@
 {
-    "861287405117112383": {
+    "861570222888321065": {
         "guild": 849727553111064576,
-        "creator": "Tomate",
+        "creator": "ddd",
         "start": [
-            16,
-            59,
-            58
+            11,
+            32,
+            13
         ],
         "loot": 0,
-        "participants": [
-            {
-                "name": "Tomate",
-                "start_time": [
-                    17,
-                    28,
-                    31
-                ],
-                "spent_time": 28,
-                "loot": 0
-            }
-        ]
+        "participants": []
     }
-}
+}      

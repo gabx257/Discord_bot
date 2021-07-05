@@ -79,3 +79,4 @@ def end_event(event_id, list_now):
         #create msg with the loot for each plyaer/ if msg was deleted, delete the event from event list
 
 #functions to add and remove loot from counter
+#dont let ppl react to the event if i was finished to avoid glitching the json decoder

@@ -2,12 +2,12 @@ import json
 from time import sleep
 import discord
 from discord.ext import commands
-
+import os
 import event_manager
 import loot_split
 from ping import keep_alive
 
-token = "ODU3OTM4NDkxOTAzNTc0MDI2.YNW3fA.BZRjvufi2QwDbLciFI6RqHGK8oA"
+token = os.environ['Token']
 intents = discord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
@@ -316,7 +316,7 @@ bot.add_cog(Create_Your_Event())
 for i in bot.commands:
     if i.name != "setup":
         i.add_check(checkChannel)
-    elif i.name == "manualremove":
+    elif i.name == "manualremove" or i.name == "quit":
         i.add_check(checkChannel)
         i.add_check(checkUser)
 
