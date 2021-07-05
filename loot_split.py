@@ -76,3 +76,6 @@ def end_event(event_id, list_now):
             if person["name"] in list_now:
                 leaving(person["name"], event_id)
         split(event_id)
+        #create msg with the loot for each plyaer/ if msg was deleted, delete the event from event list
+
+#functions to add and remove loot from counter
