@@ -38,8 +38,6 @@ def leaving(name, event_id):
             event_list[event_id] = ctx_event
             file.seek(0)
             json.dump(event_list, file, indent=4)
-        else:
-            pass  # add bot msg?
 
 
 def event_start(owner, id, guild, start=get_time()):
@@ -59,6 +57,8 @@ def split(event_id):
         total_time = 0
         for p in participants:
             total_time += p["spent_time"]
+        if total_time == 0:
+            total_time = 1
         loot_per_time = loot / total_time
         for p in participants:
             p["loot"] = p["spent_time"] * loot_per_time
@@ -78,4 +78,33 @@ def end_event(event_id, list_now):
         split(event_id)
         #create msg with the loot for each plyaer/ if msg was deleted, delete the event from event list
 
-#functions to add and remove loot from counter
+def add_loot(event_id, amount):
+    with open("event_list.json", "r+") as file:
+        event_list = json.load(file)
+        ctx_event = event_list[event_id]
+        ctx_event["loot"] += amount
+        file.seek(0)
+        json.dump(event_list,file,indent=4)
+
+
+def sub_loot(event_id, amount):
+    with open("event_list.json", "r+") as file:
+        event_list = json.load(file)
+        ctx_event = event_list[event_id]
+        ctx_event["loot"] -= amount
+        file.seek(0)
+        json.dump(event_list,file,indent=4)
+
+def loot_list(event_id):
+    with open("event_list.json", "r+") as file:
+        event_list = json.load(file)
+        ctx_event = event_list[event_id]
+        total_loot = ctx_event["loot"]
+        duration = time_passed(ctx_event["start"])
+        list = {p["name"]: p["loot"] for p in ctx_event["participants"]}
+        return [total_loot, duration, list]
+
+
+
+
+

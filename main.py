@@ -226,6 +226,26 @@ class Create_Your_Event(commands.Cog):
             await event_manager.createConfig(ctx, list(json_file[entry].values()))
         await ctx.message.delete()
 
+class loot_manager(commands.Cog):
+
+    @commands.command(help="adds loot to the counter")
+    async def add_loot(self, ctx, event_id, amount):
+        with open("event_list.json", "r+") as file:
+            event_list = json.load(file)
+            ctx_event = event_list[event_id]
+            ctx_event["loot"] += int(amount)
+            file.seek(0)
+            json.dump(event_list, file, indent=4)
+
+    @commands.command(help="removes loot from the counter")
+    async def sub_loot(self, ctx, event_id, amount):
+        with open("event_list.json", "r+") as file:
+            event_list = json.load(file)
+            ctx_event = event_list[event_id]
+            ctx_event["loot"] -= int(amount)
+            file.seek(0)
+            json.dump(event_list, file, indent=4)
+
 
 @bot.event
 async def on_raw_reaction_add(payload):
@@ -254,20 +274,30 @@ async def on_raw_reaction_add(payload):
 
         elif "Loot split is enabled" in msg.embeds[0].description:  # lootSplit-----------
 
-            if str(payload.emoji) == reactions[0]:  # join-----------
+            if str(payload.emoji) == reactions[0] and "event is over" not in msg.embeds[0].description:  # join-----------
                 await event_manager.updateMembersSplit(payload, reactions, msg, nick, user)
 
-            elif str(payload.emoji) == msg.reactions[1].emoji:  # start------------
-                loot_split.event_start(nick, str(msg.id), msg.guild)
-                embed.description += "\nEvent is running"
-                await msg.edit(embed=embed)
+            elif str(payload.emoji) == msg.reactions[1].emoji:
+                if "Event is running" not in msg.embeds[0].description and "Event is over" not in msg.embeds[0].description:
+                    loot_split.event_start(nick, str(msg.id), msg.guild)
+                    embed.description += "\nEvent is running"
+                    await msg.edit(embed=embed)
 
-            elif str(payload.emoji) == msg.reactions[2].emoji:  # stop--------------
+            elif str(payload.emoji) == msg.reactions[2].emoji and "Event is over" not in msg.embeds[0].description:  # stop--------------
                 loot_split.end_event(str(msg.id), embed.fields[0].value)
                 embed.description = embed.description.replace("Event is running", "Event is over")
                 await msg.edit(embed=embed)
+                info = loot_split.loot_list(str(msg.id))
+                embed = discord.Embed(title=msg.embeds[0].title,description="total loot: "+str(info[0])+"\n"\
+                                                                            "duration: "+str(info[1])+\
+                                                                            "\nlist of how much to give to each:")
+                names = list(info[2].keys())
+                amount = list(info[2].values())
+                for i in range(len(names)):
+                    embed.add_field(name=names[i], value=amount[i],inline=False)
+                await msg.channel.send(embed=embed)
 
-        elif msg.embeds[0].description.split("\n")[-1] == "Loot split is disabled":
+        elif "Loot split is disabled" in msg.embeds[0].description:
             await event_manager.updateMembers(payload, reactions, msg, nick, user)
 
 
@@ -287,7 +317,7 @@ async def on_raw_reaction_remove(payload):
     if msg.author == bot.user:
         embed = msg.embeds[0]
         fields = embed.fields
-        if "Loot split is enabled" in msg.embeds[0].description:
+        if "Loot split is enabled" in msg.embeds[0].description and "Event is over" not in msg.embeds[0].description:
             if str(payload.emoji) == reactions[0]:
                 value = msg.embeds[0].fields[0].value.replace(nick, "")
                 loot_split.leaving(nick, str(msg.id))
@@ -299,7 +329,7 @@ async def on_raw_reaction_remove(payload):
                 pass
             if str(payload.emoji) == reactions[2]:
                 pass
-        else:
+        elif "Loot split is disabled" in msg.embeds[0].description:
             if nick in fields[i].value:
                 name = fields[i].name
                 value = fields[i].value.replace(nick, "---")
@@ -312,6 +342,7 @@ async def on_raw_reaction_remove(payload):
 bot.add_cog(Configure_Event())
 bot.add_cog(Manager_commands())
 bot.add_cog(Create_Your_Event())
+bot.add_cog(loot_manager())
 
 for i in bot.commands:
     if i.name != "setup":
