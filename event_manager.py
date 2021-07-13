@@ -62,7 +62,7 @@ async def finalMsgSplit(msg):
 
 async def finalTemplateGenerator(msg):
     embed = msg.embeds[0]
-    string_to_list = [i.split(" ") for i in embed.fields[4].value.split("\n")]
+    string_to_list = [i.rsplit(" ",1) for i in embed.fields[4].value.split("\n")]
     cls = list(map(lambda x: x[0], string_to_list))
     qnt = list(map(lambda x: int(x[1]), string_to_list))
     message_1 = discord.Embed(title=embed.fields[0].value,

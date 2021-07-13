@@ -1,23 +1,37 @@
 {
-  "AVALON BIG PULL": {
-    "Title": "AVALON BIG PULL",
-    "Min IP": "1500",
-    "Date": "quarta",
-    "Time": "19:00",
-    "Classes": "Tank 1\nOff-Tank 1\nHealer 1\nOff-Healer 2\nArcano 2\nSUP 1\nDPS 11"
-  },
-  "DG AVALON SKIPPADA": {
-    "Title": "DG AVALON SKIPPADA",
-    "Min IP": "1300",
-    "Date": "HOJE",
-    "Time": "20:00",
-    "Classes": "Tank 1\nOff-Tank 1\nHealer 1\nOff-Healer 2\nArcano 1\nSUP 1\nDPS 12"
-  },
-  "dg": {
-    "Title": "dg",
-    "Min IP": "-",
-    "Date": "-",
-    "Time": "-",
-    "Classes": "-"
-  }
+    "avalon big pull": {
+        "Title": "avalon big pull",
+        "Min IP": "1500",
+        "Date": "quarta",
+        "Time": "19:00",
+        "Classes": "Tank 1\nOff-Tank 1\nHealer 1\nOff-Healer 2\nArcano 2\nSUP 1\nDPS 11"
+    },
+    "avalon skipada": {
+        "Title": "avalon skipada",
+        "Min IP": "1300",
+        "Date": "HOJE",
+        "Time": "20:00",
+        "Classes": "Tank 1\nOff-Tank 1\nHealer 1\nOff-Healer 2\nArcano 1\nSUP 1\nDPS 12"
+    },
+    "test": {
+        "Title": "test config",
+        "Min IP": "1800",
+        "Date": "01/01",
+        "Time": "00:00",
+        "Classes": "Tank 1\nOff-Tank 1\nHealer 1\nOff-Healer 2\nArcano 1\nSUP 1\nDPS 12"
+    },
+    "avalon small pull": {
+        "Title": "avalon small pull",
+        "Min IP": "1300",
+        "Date": "10/07",
+        "Time": "16:30",
+        "Classes": "Tank 1\noff-Tank 1\nHealer 1\noff-Healer 2\narcano 1\nSuport 2\nDPS 12"
+    },
+    "Raidmago": {
+        "Title": "Raidmago",
+        "Min IP": "1250",
+        "Date": "12/07/21",
+        "Time": "18:30",
+        "Classes": "DPS 4\ntank 1\nhealer 1"
+    }
 }
