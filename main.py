@@ -7,7 +7,7 @@ import event_manager
 import loot_split
 from ping import keep_alive
 
-token = os.environ['Token']
+token = "ODU3OTM4NDkxOTAzNTc0MDI2.YNW3fA.BZRjvufi2QwDbLciFI6RqHGK8oA"
 intents = discord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix='%', intents=intents)
@@ -282,7 +282,7 @@ async def on_raw_reaction_add(payload):
                 await bot.wait_until_ready()
                 updateMsg(msg)
             elif reactions[1] == str(payload.emoji):  # nosplit------------
-                msg = await event_manager.finalTemplateGenerator(msg)
+                msg = await event_manager.finalTemplateGenerator(msg, nick)
                 await bot.wait_until_ready()
                 updateMsg(msg)
 
@@ -324,7 +324,13 @@ async def on_raw_reaction_add(payload):
                 await msg.channel.send(embed=embed)
 
         elif "Loot split is disabled" in msg.embeds[0].description:
-            await event_manager.updateMembers(payload, reactions, msg, nick,
+            if reactions[-1] == str(payload.emoji):
+                if nick in msg.embeds[0].description:
+                    await msg.delete()
+                else:
+                    await msg.reactions[-1].remove(user)
+            else:
+                await event_manager.updateMembers(payload, reactions, msg, nick,
                                               user)
 
 
@@ -358,7 +364,7 @@ async def on_raw_reaction_remove(payload):
                 pass
             if str(payload.emoji) == reactions[2]:
                 pass
-        elif "Loot split is disabled" in msg.embeds[0].description:
+        elif "Loot split is disabled" in msg.embeds[0].description and str(payload.emoji) != reactions[-1]:
             if nick in fields[i].value:
                 name = fields[i].name
                 value = fields[i].value.replace(nick, "---")

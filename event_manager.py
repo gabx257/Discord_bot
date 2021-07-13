@@ -60,13 +60,13 @@ async def finalMsgSplit(msg):
     return msg2
 
 
-async def finalTemplateGenerator(msg):
+async def finalTemplateGenerator(msg,author):
     embed = msg.embeds[0]
-    string_to_list = [i.rsplit(" ",1) for i in embed.fields[4].value.split("\n")]
+    string_to_list = [i.rsplit(" ", 1) for i in embed.fields[4].value.split("\n")]
     cls = list(map(lambda x: x[0], string_to_list))
     qnt = list(map(lambda x: int(x[1]), string_to_list))
     message_1 = discord.Embed(title=embed.fields[0].value,
-                              description="IP: " + embed.fields[1].value +
+                              description="creator: "+author+"\nIP: " + embed.fields[1].value +
                                           "+" + "\nDate: " + embed.fields[2].value +
                                           "\nTime: " + embed.fields[3].value + "\nLoot split is disabled")
     for i, number in enumerate(qnt):
@@ -74,6 +74,7 @@ async def finalTemplateGenerator(msg):
         message_1.add_field(name=cls[i], value="\n".join(t))
     msg2 = await msg.channel.send(embed=message_1)
     await msg.delete()
+    cls.append("end event")
     await add_reactions(msg2, cls)
     return msg2
 
