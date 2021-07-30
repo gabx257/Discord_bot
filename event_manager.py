@@ -18,27 +18,27 @@ async def get_reaction_info(payload, bot):
 
 
 async def foot_notes_format(clas, emotes):
-    emoji_list = open("emoji list.txt").read()
-    emoji_list = emoji_list.split("\n")
     end_string = ""
     for em, cl in zip(emotes, clas):
-        e = emoji.emojize(emoji_list[em], use_aliases=True)
+        e = emoji.emojize(em, use_aliases=True)
         line = "  " + cl + " = " + e
         end_string += line
     return end_string
 
 
 # ---------------------------final message creator------------------------------
-async def add_reactions(msg, cls):
-    emoji_list = open("emoji list.txt").read()
-    emoji_list = emoji_list.split("\n")
-    reactions = []
-    for i in range(len(cls)):
-        r = randint(0, len(emoji_list) - 1)
-        while r in reactions:
+async def add_reactions(msg, cls,reactions = None):
+    if reactions is None:
+        emoji_list = open("emoji list.txt").read()
+        emoji_list = emoji_list.split("\n")
+        reactions = []
+        for i in range(len(cls)):
             r = randint(0, len(emoji_list) - 1)
-        reactions.append(r)
-        await msg.add_reaction(emoji.emojize(emoji_list[r], use_aliases=True))
+            while r in reactions:
+                r = randint(0, len(emoji_list) - 1)
+            reactions.append(emoji_list[r])
+    for reaction in reactions:
+        await msg.add_reaction(emoji.emojize(reaction, use_aliases=True))
     s = await foot_notes_format(cls, reactions)  # here
     msg.embeds[0].set_footer(text=s)
     await msg.edit(embed=msg.embeds[0])
@@ -47,7 +47,7 @@ async def add_reactions(msg, cls):
 # ---------------------------final message creator------------------------------
 async def finalMsgSplit(msg):
     embed = msg.embeds[0]
-    cls = ["join", "start", "stop"]
+    cls = ["join", "start", "stop", "add", "sub"]
     message_1 = discord.Embed(title=embed.fields[0].value,
                               description="IP: " + embed.fields[1].value +
                                           "+" + "\nDate: " + embed.fields[2].value +
@@ -56,7 +56,8 @@ async def finalMsgSplit(msg):
     message_1.add_field(name="Participants", value="---")
     msg2 = await msg.channel.send(embed=message_1)
     await msg.delete()
-    await add_reactions(msg2, cls)
+    reactions = [":wheelchair:", ":white_check_mark:", ":no_entry:", ":chart_with_upwards_trend:", ":chart_with_downwards_trend:"]
+    await add_reactions(msg2, cls, reactions)
     return msg2
 
 
@@ -117,9 +118,6 @@ async def updateMembers(payload, reactions, msg, nick, user):
 async def updateMembersSplit(payload, reactions, msg, nick, user):
     embed = msg.embeds[0]
     field = embed.fields[0]
-    if "Event is running" not in embed.description:
-        await msg.reactions[0].remove(user)
-        return
     if nick in field.value:
         await msg.reactions[0].remove(user)
         return

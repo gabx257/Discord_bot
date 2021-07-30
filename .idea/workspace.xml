@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="989a10f9-fe1b-47a8-852a-e660f32b17bf" name="Default Changelist" comment="loot_splitting update">
+    <list default="true" id="989a10f9-fe1b-47a8-852a-e660f32b17bf" name="Default Changelist" comment=".">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configs.json" beforeDir="false" afterPath="$PROJECT_DIR$/configs.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/event_list.json" beforeDir="false" afterPath="$PROJECT_DIR$/event_list.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/event_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/event_manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loot_split.py" beforeDir="false" afterPath="$PROJECT_DIR$/loot_split.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -150,7 +152,21 @@
       <option name="project" value="LOCAL" />
       <updated>1626189033966</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary=".">
+      <created>1626190130557</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1626190130557</updated>
+    </task>
+    <task id="LOCAL-00009" summary=".">
+      <created>1626190165426</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1626190165426</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
