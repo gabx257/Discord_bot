@@ -28,13 +28,14 @@ async def foot_notes_format(clas, emotes):
 
 # ---------------------------final message creator------------------------------
 async def add_reactions(msg, cls,reactions = None):
+    print(cls)
     if reactions is None:
         emoji_list = open("emoji list.txt").read()
         emoji_list = emoji_list.split("\n")
         reactions = []
         for i in range(len(cls)):
             r = randint(0, len(emoji_list) - 1)
-            while r in reactions:
+            while emoji_list[r] in reactions:
                 r = randint(0, len(emoji_list) - 1)
             reactions.append(emoji_list[r])
     for reaction in reactions:

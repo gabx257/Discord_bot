@@ -1,5 +1,6 @@
 import json
 from time import sleep
+import os
 
 import discord
 from discord.ext import commands
@@ -8,7 +9,7 @@ import event_manager
 import loot_split
 from ping import keep_alive
 
-token = "ODU3OTM4NDkxOTAzNTc0MDI2.YNW3fA.BZRjvufi2QwDbLciFI6RqHGK8oA"
+token = os.environ["Token"]
 intents = discord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix='%', intents=intents)
@@ -41,7 +42,7 @@ def checkChannel(ctx):
     with open("configs.json") as file:
         configs = json.load(file)
         if guild_id in list(configs.keys()):
-            return ctx.channel.name == configs[guild_id]["channel"]
+            return ctx.channel.id == configs[guild_id]["channel"]
         else:
             return False
 
@@ -56,13 +57,14 @@ def checkUser():
 class Manager_commands(commands.Cog):
     @commands.command(hidden=True)
     async def setup(self, ctx):
-        msg = check_message(ctx)
+        msg = await check_message(ctx)
         await ctx.channel.send("which channel should i use?", delete_after=20)
         channel = None
         msg2 = await bot.wait_for('message')
         if msg2.author == ctx.author:
-            if msg2.content in [i.name for i in ctx.guild.channels]:
-                channel = msg2.content
+            chnlnames = [i.name for i in ctx.guild.channels]
+            if msg2.content in chnlnames:
+                channel = ctx.guild.channels[chnlnames.index(msg2.content)].id
                 await ctx.channel.send("got it", delete_after=10)
                 await msg2.delete()
             else:
